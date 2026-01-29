@@ -21,9 +21,24 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd Devops-CICD-Project
+
+            echo "Stopping old container if exists..."
             docker stop devops-app || true
             docker rm devops-app || true
+
+            echo "Removing unused containers..."
             docker ps -q | xargs -r docker stop
-            docker
+            docker ps -aq | xargs -r docker rm
+
+            echo "Building Docker image..."
+            docker build -t devops-app .
+
+            echo "Running container with auto-restart..."
+            docker run -d \
+              --restart unless-stopped \
+              -p 80:80 \
+              --name devops-app \
+              devops-app
+
 
 
