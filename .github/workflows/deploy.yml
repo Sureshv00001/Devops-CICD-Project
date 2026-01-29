@@ -10,18 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Deploy to EC2 via SSH
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
-        script: |
-          cd Devops-CICD-Project
-          docker stop devops-app || true
-          docker rm devops-app || true
-          docker build -t devops-app .
-          docker run -d -p 80:80 --name devops-app devops-app
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd Devops-CICD-Project
+            docker stop devops-app || true
+            docker rm devops-app || true
+            docker ps -q | xargs -r docker stop
+            docker
+
+
